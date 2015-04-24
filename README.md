@@ -6,7 +6,11 @@ This simple PHP script try to answer this question.
 
 [Here](https://gist.github.com/icalvete/d60d5080e18f76d6154f) there is a bash template to play lauching jenkins job by API, The simplest one.
 
-#limitations
+##Usage
+
+Configure [POST hook](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management) with https://yourserver/getpost.php?token=<yourtoken>&job_name=<yourjobname>
+
+##Limitations
 
 **Only the first (last in json) commit have the branch. In later is null.**
 
