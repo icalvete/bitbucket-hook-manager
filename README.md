@@ -8,7 +8,7 @@ This simple PHP script try to answer this question.
 
 ##Usage
 
-Configure [POST hook](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management) with https://yourserver/getpost.php?token=<yourtoken>&job_name=<yourjobname>
+Configure [POST hook](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management) with https://yourserver/getpost.php?token=&lt;yourtoken&gt;&job_name=&lt;yourjobname&gt;
 
 ##Limitations
 
