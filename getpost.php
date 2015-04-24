@@ -1,20 +1,18 @@
 <?php
-$log = true;
+$log = false;
+$log_file = '/tmp/getpost.log';
 $jenkins_url = 'http://localhost:8080';
 $allowed_branches = '/^(DEV)|(FZ-)/';
 
 $post = '';
-
 foreach ($_POST as $k => $v) {
 	$post .= "$k = $v\n";
 }
 
 $get = '';
-
 foreach ($_GET as $k => $v) {
 	$get .= "$k = $v\n";
 }
-
 
 $json = json_decode($_POST['payload']);
 $repo_name = $json->{'repository'}->{'name'};
@@ -55,7 +53,7 @@ curl_exec($ch);
 curl_close($ch);
 
 if($log){
-	$fp = fopen('/tmp/getpost.log', 'a+');
+	$fp = fopen($log_file, 'a+');
 	$now = date("Y-m-d H:i:s u", time());
 	fwrite($fp,  "--------- '.$now.' ---------\n");
 	fwrite($fp, $post);
