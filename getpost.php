@@ -1,16 +1,19 @@
 <?php
 $log = false;
 $log_file = '/tmp/getpost.log';
-$jenkins_url = 'http://localhost:8080';
+
+$scheme = 'http';
+$host = 'localhost:8080';
+
 $allowed_branches = '/^(DEV)|(FZ-)/';
 
 $post = '';
-foreach ($_POST as $k => $v) {
+foreach ($_POST as $k => $v){
 	$post .= "$k = $v\n";
 }
 
 $get = '';
-foreach ($_GET as $k => $v) {
+foreach ($_GET as $k => $v){
 	$get .= "$k = $v\n";
 }
 
@@ -20,7 +23,7 @@ $commits =  $json->{'commits'};
 # Only the first (last in json) commit have the branch. In later is null.
 $branch = $commits[count($commits)-1]->{'branch'};
 
-if(!preg_match($allowed_branches, $branch, $matches, PREG_OFFSET_CAPTURE)){
+if (!preg_match($allowed_branches, $branch, $matches, PREG_OFFSET_CAPTURE)){
 	exit;
 }
 
@@ -30,8 +33,10 @@ $token = $_GET['token'];
 # Chossing job_name by branch name
 $job_name = $branch == 'DEV' ? $job_name : $job_name . '-fb';
 
+$path_crumb = 'crumbIssuer/api/json';
+$url_crumb = $scheme.'://'.$host.'/'.$path_crumb;
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $jenkins_url.'/crumbIssuer/api/json');
+curl_setopt($ch, CURLOPT_URL, $url_crumb);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -40,23 +45,27 @@ curl_close($ch);
 $crumb =  $json->{'crumb'};
 
 
+$path_launch_job = '/job/'.$job_name.'/buildWithParameters?token='.$token.'&BRANCH='.urlencode($branch);
+$url_launch_job = $scheme.'://'.$host.'/'.$path_launch_job;
 $post_data = '{"parameter": {"name":"BRANCH", "value":"'.$branch.'"}}';
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $jenkins_url.'/job/'.$job_name.'/buildWithParameters?token='.$token.'&BRANCH='.urlencode($branch));
+curl_setopt($ch, CURLOPT_URL, $url_launch_job);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	'Content-Type: application/json',
+	'Content-Length: ' . strlen($post_data))
+);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array('.crumb:'.$crumb));
 curl_exec($ch);
 curl_close($ch);
 
-if($log){
+if ($log){
 	$fp = fopen($log_file, 'a+');
 	$now = date("Y-m-d H:i:s u", time());
 	fwrite($fp,  "--------- '.$now.' ---------\n");
-	fwrite($fp, $post);
 	fwrite($fp,  "--------- POST ---------\n");
 	fwrite($fp, $post);
 	fwrite($fp,  "--------- GET ---------\n");
