@@ -10,6 +10,11 @@ This simple PHP script try to answer this question.
 
 Configure [POST hook](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management) with https://yourserver/getpost.php?token=&lt;yourtoken&gt;&job_name=&lt;yourjobname&gt;
 
+## Requisites
+
+The job need to be parameterized with a param called BRANCH.
+
+
 ##Limitations
 
 **Only the first (last in json) commit have the branch. In later is null.**
