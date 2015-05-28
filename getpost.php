@@ -1,5 +1,5 @@
 <?php
-$log = false;
+$log = true;
 $log_file = '/tmp/getpost.log';
 
 $scheme = 'http';
@@ -70,6 +70,8 @@ if ($log){
 	fwrite($fp, $post);
 	fwrite($fp,  "--------- GET ---------\n");
 	fwrite($fp, $get);
+	fwrite($fp,  "--------- JENKINS---------\n");
+	fwrite($fp, $url_launch_job);
 	fwrite($fp,  "\n\n");
 	fclose($fp);
 }
