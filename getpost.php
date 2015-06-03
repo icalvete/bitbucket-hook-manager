@@ -40,6 +40,7 @@ curl_setopt($ch, CURLOPT_URL, $url_crumb);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 $json = json_decode(curl_exec($ch));
 curl_close($ch);
 $crumb =  $json->{'crumb'};
@@ -53,6 +54,7 @@ curl_setopt($ch, CURLOPT_URL, $url_launch_job);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 	'Content-Type: application/json',
