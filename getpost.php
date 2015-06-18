@@ -31,7 +31,7 @@ $job_name = isset($_GET['job_name']) ?: $repo_name;
 $token = $_GET['token'];
 
 # Chossing job_name by branch name
-$job_name = $branch == 'DEV' ? $job_name : $job_name . '-fb';
+$job_name = $branch == 'DEV' ? $job_name : 'fluzo-fb';
 
 $path_crumb = 'crumbIssuer/api/json';
 $url_crumb = $scheme.'://'.$host.'/'.$path_crumb;
@@ -45,21 +45,27 @@ $json = json_decode(curl_exec($ch));
 curl_close($ch);
 $crumb =  $json->{'crumb'};
 
+if($job_name == 'fluzo-fb') {
+	$path_launch_job = '/job/'.$job_name.'/buildWithParameters?token='.$token.'&BRANCH='.urlencode($branch).'?REPO='.urlencode($repo_name);
+	$post_data = '{"parameter": [{"name":"BRANCH", "value":"'.$branch.'"}, {"name":"REPO", "value":"'.$repo_name.'"}]}';
+}else{
+	$path_launch_job = '/job/'.$job_name.'/buildWithParameters?token='.$token.'&BRANCH='.urlencode($branch);
+	$post_data = '{"parameter": {"name":"BRANCH", "value":"'.$branch.'"}}';
+}
 
-$path_launch_job = '/job/'.$job_name.'/buildWithParameters?token='.$token.'&BRANCH='.urlencode($branch);
 $url_launch_job = $scheme.'://'.$host.'/'.$path_launch_job;
-$post_data = '{"parameter": {"name":"BRANCH", "value":"'.$branch.'"}}';
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url_launch_job);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 	'Content-Type: application/json',
 	'Content-Length: ' . strlen($post_data))
 );
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array('.crumb:'.$crumb));
 curl_exec($ch);
 curl_close($ch);
